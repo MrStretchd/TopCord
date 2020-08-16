@@ -1,3 +1,5 @@
+pip3 install TopCord
+
 ```py
 from TopCord import TopXyz
 
