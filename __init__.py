@@ -1,20 +1,24 @@
-import requests
+import aiohttp, json
 
 class TopXyz:
-    def __init__(self, token, bot_id):
+    def __init__(self, token):
         self.token = token
-        self.bot_id = bot_id
 
-    def Update(self, guild_count:int, shard_count:int=None):
-        if shard_count and guild_count:
-            UpdateRequest = requests.post("https://topcord.xyz/api/bot/stats/" + str(self.bot_id), headers={"authorization":self.token}, data={"guilds":guild_count, "shards":shard_count})
-            return UpdateRequest
+    async def post_stats(self, bot_id: str, guild_count:int, shard_count:int=None):
+        if shard_count is None:
+            async with aiohttp.ClientSession() as session:
+                async with session.post('https://topcord.xyz/api/bot/stats/' + bot_id,
+                headers={'Authorization': str(self.token)},
+                data=json.dumps({"guilds": guild_count, "shards": shard_count})) as r:
+                    return await r.json()
         else:
-            UpdateRequest = requests.post("https://topcord.xyz/api/bot/stats/" + str(self.bot_id), headers={"authorization":self.token}, data={"guilds":guild_count, "shards":0})
-            return UpdateRequest
+            async with aiohttp.ClientSession() as session:
+                async with session.post('https://topcord.xyz/api/bot/stats/' + bot_id,
+                headers={'Authorization': str(self.token)},
+                data=json.dumps({"guilds": guild_count, "shards": 0})) as r:
+                    return await r.json()
 
-    def GetStats(self):
-        GetRequest = requests.get("https://topcord.xyz/api/bot/" + str(self.bot_id))
-        Stats = GetRequest.json()
-        return Stats
-    
+    async def get_stats(self, bot_id: str):
+        async with aiohttp.ClientSession() as session:
+            async with session.get('https://topcord.xyz/api/bot/stats/' + bot_id) as r:
+                return await r.json()
