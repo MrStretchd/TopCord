@@ -1,4 +1,4 @@
-import aiohttp, json
+import aiohttp
 
 class TopXyz:
     def __init__(self, token):
@@ -10,7 +10,7 @@ class TopXyz:
         async with aiohttp.ClientSession() as session:
             async with session.post('https://topcord.xyz/api/bot/stats/' + str(bot_id),
             headers={'Authorization': str(self.token)},
-            data=json.dumps({"guilds": guild_count, "shards": shard_count})) as r:
+            data={"guilds": guild_count, "shards": shard_count}) as r:
                 return await r.json()
 
     async def get_stats(self, bot_id):
